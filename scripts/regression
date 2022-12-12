@@ -1,0 +1,35 @@
+#!/bin/bash
+cd "$(dirname "$0")/.."
+
+declare -a answers1=(
+)
+declare -a answers2=(
+)
+
+declare -i passed=0
+declare -i skipped=0
+declare -i total=0
+for day_bin in bin/*; do
+	day="$(basename "$day_bin")"
+	day_idx="$(($(echo "$day" | sed 's/^0//') - 1))"
+	echo -n "Day $day: "
+	for part in 1 2; do
+		answer="answers$part[$day_idx]"
+		if [[ -z "${!answer}" ]]; then
+			((++skipped))
+			echo -ne "\e[1;37mS\e[0m"
+		elif [[ "$(./"$day_bin" "$part" < input/"${day}.txt")" == "${!answer}" ]]; then
+			((++passed))
+			((++total))
+			echo -ne "\e[1;32mP\e[0m"
+		else
+			((++total))
+			echo -ne "\e[1;31mF\e[0m"
+		fi
+	done
+	echo
+done
+
+[[ "$passed" -eq "$total" ]] && i=32 || i=31
+echo -e "\e[1;${i}mPassed $passed/$total\e[0m ($skipped skipped)"
+[[ "$passed" -eq "$total" ]]
