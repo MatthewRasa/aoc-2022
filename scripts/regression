@@ -2,8 +2,10 @@
 cd "$(dirname "$0")/.."
 
 declare -a answers1=(
+	71506
 )
 declare -a answers2=(
+	209603
 )
 
 declare -i passed=0
