@@ -38,7 +38,7 @@ int sum_top_three(std::vector<Elf> elves) {
 int main(int argc, char *argv[]) {
 	const auto part = select_part(argc, argv);
 	std::vector<Elf> elves;
-	while (std::cin)
+	while (has_input(std::cin))
 		elves.emplace_back(std::cin);
 
 	switch (part) {

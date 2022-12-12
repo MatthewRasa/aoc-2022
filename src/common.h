@@ -7,15 +7,18 @@
 
 /* --- Input readers --- */
 
+bool has_input(std::istream &in) {
+	return in.peek() != -1;
+}
+
 template<class CRTP>
 struct Token_Reader {
 	Token_Reader(std::istream &in) {
 		std::string line;
 		if (!std::getline(in, line))
 			throw std::logic_error{"EOF encountered in Token_Reader"};
-		std::cout << line << std::endl;
 		std::istringstream ss{line};
-		for (std::string token; std::getline(ss, token); ++token_num_)
+		for (std::string token; std::getline(ss, token, ' '); ++token_num_)
 			static_cast<CRTP &>(*this).read_token(token);
 		static_cast<CRTP &>(*this).read_end();
 	}
