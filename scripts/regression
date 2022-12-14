@@ -6,12 +6,14 @@ declare -a answers1=(
 	11906
 	7553
 	511
+	'ZSQVCCJLL'
 )
 declare -a answers2=(
 	209603
 	11186
 	2758
 	821
+	'QZFJRWHGS'
 )
 
 declare -i passed=0
