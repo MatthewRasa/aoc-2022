@@ -5,11 +5,13 @@ declare -a answers1=(
 	71506
 	11906
 	7553
+	511
 )
 declare -a answers2=(
 	209603
 	11186
 	2758
+	821
 )
 
 declare -i passed=0

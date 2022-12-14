@@ -11,7 +11,7 @@ bool has_input(std::istream &in) {
 	return in.peek() != -1;
 }
 
-template<class CRTP>
+template<class CRTP, char DelimV = ' '>
 struct Token_Reader {
 	static CRTP create_from_stream(std::istream &in) {
 		std::string line;
@@ -20,7 +20,7 @@ struct Token_Reader {
 		std::istringstream ss{line};
 
 		CRTP instance{};
-		for (std::string token; std::getline(ss, token, ' '); ++instance.token_num_)
+		for (std::string token; std::getline(ss, token, DelimV); ++instance.token_num_)
 			instance.read_token(token);
 		instance.read_end();
 		return instance;
