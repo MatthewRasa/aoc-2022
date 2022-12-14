@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
 	const auto part = select_part(argc, argv);
 	std::vector<Elf> elves;
 	while (has_input(std::cin))
-		elves.emplace_back(std::cin);
+		elves.push_back(Elf::create_from_stream(std::cin));
 
 	switch (part) {
 	case 1:

@@ -13,15 +13,20 @@ bool has_input(std::istream &in) {
 
 template<class CRTP>
 struct Token_Reader {
-	Token_Reader(std::istream &in) {
+	static CRTP create_from_stream(std::istream &in) {
 		std::string line;
 		if (!std::getline(in, line))
 			throw std::logic_error{"EOF encountered in Token_Reader"};
 		std::istringstream ss{line};
-		for (std::string token; std::getline(ss, token, ' '); ++token_num_)
-			static_cast<CRTP &>(*this).read_token(token);
-		static_cast<CRTP &>(*this).read_end();
+
+		CRTP instance{};
+		for (std::string token; std::getline(ss, token, ' '); ++instance.token_num_)
+			instance.read_token(token);
+		instance.read_end();
+		return instance;
 	}
+
+	virtual ~Token_Reader() = default;
 
 	virtual void read_token(const std::string &token) = 0;
 
@@ -36,12 +41,33 @@ private:
 };
 
 template<class CRTP>
-struct Paragraph_Reader {
-	Paragraph_Reader(std::istream &in) {
-		for (std::string line; std::getline(in, line) && !line.empty(); ++line_num_)
-			static_cast<CRTP &>(*this).read_line(line);
-		static_cast<CRTP &>(*this).read_end();
+struct Line_Reader {
+	static CRTP create_from_stream(std::istream &in) {
+		std::string line;
+		if (!std::getline(in, line))
+			throw std::logic_error{"EOF encountered in Line_Reader"};
+
+		CRTP instance{};
+		instance.read_line(line);
+		return instance;
 	}
+
+	virtual ~Line_Reader() = default;
+
+	virtual void read_line(const std::string &line) = 0;
+};
+
+template<class CRTP>
+struct Paragraph_Reader {
+	static CRTP create_from_stream(std::istream &in) {
+		CRTP instance{};
+		for (std::string line; std::getline(in, line) && !line.empty(); ++instance.line_num_)
+			instance.read_line(line);
+		instance.read_end();
+		return instance;
+	}
+
+	virtual ~Paragraph_Reader() = default;
 
 	virtual void read_line(const std::string &line) = 0;
 

@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) {
 	const auto part = select_part(argc, argv);
 	std::vector<Round> rounds;
 	while (has_input(std::cin))
-		rounds.emplace_back(std::cin);
+		rounds.push_back(Round::create_from_stream(std::cin));
 	switch (part) {
 	case 1:
 		std::cout << total_score1(rounds) << std::endl;

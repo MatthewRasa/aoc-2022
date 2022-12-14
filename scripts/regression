@@ -4,10 +4,12 @@ cd "$(dirname "$0")/.."
 declare -a answers1=(
 	71506
 	11906
+	7553
 )
 declare -a answers2=(
 	209603
 	11186
+	2758
 )
 
 declare -i passed=0
