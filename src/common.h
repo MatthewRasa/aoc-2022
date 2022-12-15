@@ -11,6 +11,12 @@ bool has_input(std::istream &in) {
 	return in.peek() != -1;
 }
 
+std::string read_line(std::istream &in) {
+	std::string line;
+	std::getline(in, line);
+	return line;
+}
+
 template<class CRTP, char DelimV = ' '>
 struct Token_Reader {
 	static CRTP create_from_stream(std::istream &in) {
