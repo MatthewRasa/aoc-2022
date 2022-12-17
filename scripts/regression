@@ -8,6 +8,7 @@ declare -a answers1=(
 	511
 	'ZSQVCCJLL'
 	1544
+	1908462
 )
 declare -a answers2=(
 	209603
@@ -16,6 +17,7 @@ declare -a answers2=(
 	821
 	'QZFJRWHGS'
 	2145
+	3979145
 )
 
 declare -i passed=0
