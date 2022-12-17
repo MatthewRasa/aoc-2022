@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cstring>
 #include <iostream>
+#include <iterator>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -98,6 +99,56 @@ struct Paragraph_Reader {
 private:
 	std::size_t line_num_{0};
 };
+
+/* --- Position --- */
+
+struct Position {
+	int x, y;
+	[[nodiscard]] bool operator==(const Position &other) const noexcept {
+		return x == other.x && y == other.y;
+	}
+};
+
+namespace std {
+	template<>
+	struct hash<Position> {
+		[[nodiscard]] std::size_t operator()(const Position &position) const noexcept {
+			return (static_cast<std::size_t>(position.x) << 32) + static_cast<std::size_t>(position.y);
+		}
+	};
+
+	std::ostream &operator<<(std::ostream &out, const Position &position) {
+		out << "<" << position.x << "," << position.y << ">";
+		return out;
+	}
+}
+
+/* --- Visual debugging */
+
+template<typename PositionsT>
+void print_grid_positions(const PositionsT &positions, char display_char = '#') {
+	print_grid_positions(positions,
+						 std::min_element(positions.begin(), positions.end(),
+										  [](const auto &p0, const auto &p1) { return p0.x < p1.x; })->x,
+						 std::min_element(positions.begin(), positions.end(),
+										  [](const auto &p0, const auto &p1) { return p0.y < p1.y; })->y,
+					  	 std::max_element(positions.begin(), positions.end(),
+											[](const auto &p0, const auto &p1) { return p0.x < p1.x; })->x,
+					     std::max_element(positions.begin(), positions.end(),
+										  [](const auto &p0, const auto &p1) { return p0.y < p1.y; })->y,
+						 display_char);
+}
+
+template<typename PositionsT>
+void print_grid_positions(const PositionsT &positions, std::size_t min_x, std::size_t min_y, std::size_t max_x, std::size_t max_y, char display_char = '#') {
+	std::vector<std::vector<char>> grid(max_y - min_y + 1, std::vector<char>(max_x - min_x + 1, '.'));
+	for (const auto &position : positions)
+		grid[position.y - min_y][position.x - min_x] = display_char;
+	for (const auto &row : grid) {
+		std::copy(row.begin(), row.end(), std::ostream_iterator<char>(std::cout));
+		std::cout << std::endl;
+	}
+}
 
 /* --- Boilerplate --- */
 
