@@ -1,9 +1,11 @@
 #pragma once
 
+#include <algorithm>
 #include <cstring>
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <vector>
 
 /* --- Input readers --- */
 
@@ -15,6 +17,16 @@ std::string read_line(std::istream &in) {
 	std::string line;
 	std::getline(in, line);
 	return line;
+}
+
+std::vector<std::vector<int>> read_integer_grid(std::istream &in) {
+	std::vector<std::vector<int>> grid;
+	for (std::string line; std::getline(in, line); ) {
+		std::vector<int> grid_line(line.size());
+		std::transform(line.begin(), line.end(), grid_line.begin(), [](auto c) { return c - '0'; });
+		grid.push_back(std::move(grid_line));
+	}
+	return grid;
 }
 
 template<class CRTP, char DelimV = ' '>
