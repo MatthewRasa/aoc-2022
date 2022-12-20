@@ -2,10 +2,12 @@
 
 #include <algorithm>
 #include <cstring>
+#include <functional>
 #include <iostream>
 #include <iterator>
 #include <sstream>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 /* --- Input readers --- */
@@ -20,14 +22,20 @@ std::string read_line(std::istream &in) {
 	return line;
 }
 
-std::vector<std::vector<int>> read_integer_grid(std::istream &in) {
-	std::vector<std::vector<int>> grid;
+template<typename Transform_FuncT = std::function<char(char)>>
+auto read_grid(std::istream &in, const Transform_FuncT &transform_func = [](char c) { return c; }) {
+	using Element_Type = std::decay_t<std::invoke_result_t<decltype(transform_func), char>>;
+	std::vector<std::vector<Element_Type>> grid;
 	for (std::string line; std::getline(in, line); ) {
-		std::vector<int> grid_line(line.size());
-		std::transform(line.begin(), line.end(), grid_line.begin(), [](auto c) { return c - '0'; });
+		std::vector<Element_Type> grid_line(line.size());
+		std::transform(line.begin(), line.end(), grid_line.begin(), transform_func);
 		grid.push_back(std::move(grid_line));
 	}
 	return grid;
+}
+
+std::vector<std::vector<int>> read_integer_grid(std::istream &in) {
+	return read_grid(in, [](char c) { return c - '0'; });
 }
 
 template<class CRTP, char DelimV = ' '>
@@ -109,6 +117,13 @@ struct Position {
 	}
 };
 
+struct Grid_Position {
+	std::size_t r, c;
+	[[nodiscard]] bool operator==(const Grid_Position &other) const noexcept {
+		return r == other.r && c == other.c;
+	}
+};
+
 namespace std {
 	template<>
 	struct hash<Position> {
@@ -117,13 +132,33 @@ namespace std {
 		}
 	};
 
+	template<>
+	struct hash<Grid_Position> {
+		[[nodiscard]] std::size_t operator()(const Grid_Position &position) const noexcept {
+			return (position.r << 32) + static_cast<std::size_t>(position.c);
+		}
+	};
+
 	std::ostream &operator<<(std::ostream &out, const Position &position) {
 		out << "<" << position.x << "," << position.y << ">";
+		return out;
+	}
+
+	std::ostream &operator<<(std::ostream &out, const Grid_Position &position) {
+		out << "<" << position.r << "," << position.c << ">";
 		return out;
 	}
 }
 
 /* --- Visual debugging */
+
+template<typename ItemT>
+void print_grid(const std::vector<std::vector<ItemT>> &grid) {
+	for (const auto &row : grid) {
+		std::copy(row.begin(), row.end(), std::ostream_iterator<ItemT>(std::cout));
+		std::cout << std::endl;
+	}
+}
 
 template<typename PositionsT>
 void print_grid_positions(const PositionsT &positions, char display_char = '#') {
@@ -133,7 +168,7 @@ void print_grid_positions(const PositionsT &positions, char display_char = '#') 
 						 std::min_element(positions.begin(), positions.end(),
 										  [](const auto &p0, const auto &p1) { return p0.y < p1.y; })->y,
 					  	 std::max_element(positions.begin(), positions.end(),
-											[](const auto &p0, const auto &p1) { return p0.x < p1.x; })->x,
+										  [](const auto &p0, const auto &p1) { return p0.x < p1.x; })->x,
 					     std::max_element(positions.begin(), positions.end(),
 										  [](const auto &p0, const auto &p1) { return p0.y < p1.y; })->y,
 						 display_char);
