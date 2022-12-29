@@ -150,6 +150,48 @@ namespace std {
 	}
 }
 
+/* --- Circular Queue --- */
+
+template<typename T, typename QueueT = std::vector<T>>
+struct Circular_Queue {
+
+	template<typename QueueRefT>
+	Circular_Queue(QueueRefT &&queue)
+		: queue_{std::forward<QueueRefT>(queue)},
+		  it_{queue_.begin()} { }
+
+	[[nodiscard]] std::size_t size() const noexcept {
+		return queue_.size();
+	}
+
+	[[nodiscard]] bool at_start() const noexcept {
+		return it_ == queue_.begin();
+	}
+
+	[[nodiscard]] std::size_t position() const noexcept {
+		return std::distance(queue_.begin(), it_);
+	}
+
+	[[nodiscard]] const T &current() const noexcept {
+		return *it_;
+	}
+
+	void next() noexcept {
+		if (++it_ == queue_.end())
+			it_ = queue_.begin();
+	}
+
+	const T &take() noexcept {
+		auto prev_it = it_;
+		next();
+		return *prev_it;
+	}
+
+private:
+	QueueT queue_;
+	typename QueueT::const_iterator it_;
+};
+
 /* --- Visual debugging */
 
 template<typename ItemT>
