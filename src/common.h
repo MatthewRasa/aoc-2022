@@ -22,6 +22,14 @@ std::string read_line(std::istream &in) {
 	return line;
 }
 
+std::vector<std::string> read_tokens(const std::string &line, char delim = ' ') {
+	std::vector<std::string> tokens;
+	std::stringstream ss{line};
+	for (std::string token; std::getline(ss, token, delim); )
+		tokens.push_back(token);
+	return tokens;
+}
+
 template<typename Transform_FuncT = std::function<char(char)>>
 auto read_grid(std::istream &in, const Transform_FuncT &transform_func = [](char c) { return c; }) {
 	using Element_Type = std::decay_t<std::invoke_result_t<decltype(transform_func), char>>;
@@ -117,6 +125,13 @@ struct Position {
 	}
 };
 
+struct Position3D {
+	int x, y, z;
+	[[nodiscard]] bool operator==(const Position3D &other) const noexcept {
+		return x == other.x && y == other.y && z == other.z;
+	}
+};
+
 struct Grid_Position {
 	std::size_t r, c;
 	[[nodiscard]] bool operator==(const Grid_Position &other) const noexcept {
@@ -133,6 +148,13 @@ namespace std {
 	};
 
 	template<>
+	struct hash<Position3D> {
+		[[nodiscard]] std::size_t operator()(const Position3D &position) const noexcept {
+			return std::hash<std::string>{}(std::to_string(position.x) + "," + std::to_string(position.y) + "," + std::to_string(position.z));
+		}
+	};
+
+	template<>
 	struct hash<Grid_Position> {
 		[[nodiscard]] std::size_t operator()(const Grid_Position &position) const noexcept {
 			return (position.r << 32) + static_cast<std::size_t>(position.c);
@@ -141,6 +163,11 @@ namespace std {
 
 	std::ostream &operator<<(std::ostream &out, const Position &position) {
 		out << "<" << position.x << "," << position.y << ">";
+		return out;
+	}
+
+	std::ostream &operator<<(std::ostream &out, const Position3D &position) {
+		out << "<" << position.x << "," << position.y << "," << position.z << ">";
 		return out;
 	}
 
