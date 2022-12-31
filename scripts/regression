@@ -20,6 +20,7 @@ declare -a answers1=(
 	1728
 	3149
 	4636
+	'' # 2301 (skipped due to long duration)
 )
 declare -a answers2=(
 	209603
@@ -45,6 +46,7 @@ declare -a answers2=(
 	'' # 2304 (skipped due to long duration)
 	1553982300884
 	2572
+	'' # 10336 (skipped due to long duration)
 )
 
 declare -i passed=0
