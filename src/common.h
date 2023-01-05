@@ -34,7 +34,7 @@ template<typename Transform_FuncT = std::function<char(char)>>
 auto read_grid(std::istream &in, const Transform_FuncT &transform_func = [](char c) { return c; }) {
 	using Element_Type = std::decay_t<std::invoke_result_t<decltype(transform_func), char>>;
 	std::vector<std::vector<Element_Type>> grid;
-	for (std::string line; std::getline(in, line); ) {
+	for (std::string line; std::getline(in, line) && !line.empty(); ) {
 		std::vector<Element_Type> grid_line(line.size());
 		std::transform(line.begin(), line.end(), grid_line.begin(), transform_func);
 		grid.push_back(std::move(grid_line));
