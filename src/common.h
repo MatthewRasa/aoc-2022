@@ -182,41 +182,43 @@ namespace std {
 template<typename T, typename QueueT = std::vector<T>>
 struct Circular_Queue {
 
-	template<typename QueueRefT>
-	Circular_Queue(QueueRefT &&queue)
-		: queue_{std::forward<QueueRefT>(queue)},
-		  it_{queue_.begin()} { }
+	explicit Circular_Queue(const QueueT &queue)
+		: queue_{queue},
+		  idx_{0} { }
+
+	explicit Circular_Queue(QueueT &&queue)
+		: queue_{std::move(queue)},
+		  idx_{0} { }
 
 	[[nodiscard]] std::size_t size() const noexcept {
 		return queue_.size();
 	}
 
 	[[nodiscard]] bool at_start() const noexcept {
-		return it_ == queue_.begin();
+		return idx_ == 0;
 	}
 
 	[[nodiscard]] std::size_t position() const noexcept {
-		return std::distance(queue_.begin(), it_);
+		return idx_;
 	}
 
 	[[nodiscard]] const T &current() const noexcept {
-		return *it_;
+		return queue_[idx_];
 	}
 
 	void next() noexcept {
-		if (++it_ == queue_.end())
-			it_ = queue_.begin();
+		idx_ = (idx_ + 1) % queue_.size();
 	}
 
 	const T &take() noexcept {
-		auto prev_it = it_;
+		auto prev_idx = idx_;
 		next();
-		return *prev_it;
+		return queue_[prev_idx];
 	}
 
 private:
 	QueueT queue_;
-	typename QueueT::const_iterator it_;
+	std::size_t idx_;
 };
 
 /* --- Visual debugging */
