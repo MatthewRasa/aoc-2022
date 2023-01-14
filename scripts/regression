@@ -25,6 +25,7 @@ declare -a answers1=(
 	159591692827554
 	65368
 	3788
+	322
 )
 declare -a answers2=(
 	209603
@@ -55,6 +56,7 @@ declare -a answers2=(
 	3509819803065
 	156166
 	921
+	974
 )
 
 declare -i passed=0
