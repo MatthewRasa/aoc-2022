@@ -22,6 +22,13 @@ std::string read_line(std::istream &in) {
 	return line;
 }
 
+std::vector<std::string> read_lines(std::istream &in) {
+	std::vector<std::string> lines;
+	for (std::string line; std::getline(in, line); )
+		lines.push_back(std::move(line));
+	return lines;
+}
+
 std::vector<std::string> read_tokens(const std::string &line, char delim = ' ') {
 	std::vector<std::string> tokens;
 	std::stringstream ss{line};

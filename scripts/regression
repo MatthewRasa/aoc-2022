@@ -26,6 +26,7 @@ declare -a answers1=(
 	65368
 	3788
 	322
+	'2---0-1-2=0=22=2-011'
 )
 declare -a answers2=(
 	209603
